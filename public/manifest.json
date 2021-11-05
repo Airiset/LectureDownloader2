@@ -37,7 +37,7 @@
       "matches": [
         "*://*.bbcollab.com/*"
       ],
-      "js": ["jquery.min.js", "contentScriptBB.js"]
+      "js": ["contentScriptBB.js"]
     }
   ]
 }

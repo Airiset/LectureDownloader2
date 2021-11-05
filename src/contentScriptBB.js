@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 port = chrome.runtime.connect();
 
 function getMenuList() {

@@ -2,6 +2,7 @@
   "manifest_version": 2,
   "name": "Lecture Downloader",
   "version": "2.0.0",
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
   "description": "Downloads UofT MyMedia Videos",
   "icons": {
     "16": "icons/16x16.png",
@@ -31,6 +32,12 @@
       "js": [
         "contentScript.js"
       ]
+    },
+    {
+      "matches": [
+        "*://*.bbcollab.com/*"
+      ],
+      "js": ["jquery.min.js", "contentScriptBB.js"]
     }
   ]
 }

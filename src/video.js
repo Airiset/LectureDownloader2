@@ -29,10 +29,12 @@ function parsem3u8 (url) {
 }
 
 export default async function download (m3u8URL, { lengthRestriction=-1, onProgress }) {
-  function _onProgress (downloadProgress, downloadDone, concatDone, video) {
-    if (onProgress) onProgress({ downloadProgress, downloadDone, concatDone, video })
+  function _onProgress (downloadProgress, downloadDone, concatDone, video, stdOut, stdErr) {
+    if (onProgress) onProgress({ downloadProgress, downloadDone, concatDone, video, stdOut, stdErr })
   }
-  _onProgress(0, false, false, null)
+  let stdOut = ""
+  let stdErr = ""
+  _onProgress(0, false, false, null, stdOut, stdErr)
 
   const baseUrl = m3u8URL.split("/").slice(0, -1).join("/") + "/"
   const manifest = await parsem3u8(m3u8URL)
@@ -46,38 +48,36 @@ export default async function download (m3u8URL, { lengthRestriction=-1, onProgr
     count += 1
 
     const progress = count / segments.length
-    _onProgress(progress, false, false, null)
+    _onProgress(progress, false, false, null, stdOut, stdErr)
 
     buffers.push(buffer)
   }
-  _onProgress(1, true, false, null)
+  _onProgress(1, true, false, null, stdOut, stdErr)
 
   // Now we need to create the MEMFS array and the concat command
   const fs = buffers.map((buffer, index) => ({ name: `${index}.ts`, data: buffer }))
   const concatCommand = `concat:${fs.map(({ name }) => name).join("|")}`
   const args = `-i ${concatCommand} -c copy out.mp4`.split(" ")
 
-  let stdout = ""
-  let stderr = ""
   const res = ffmpeg({
     MEMFS: fs,
     arguments: args,
     print: (data) => {
-      stdout += data
+      stdOut += data
     }, // It crashes if you don't have this. Tries to call it but it's not defined
     printErr: (data) => {
-      stderr += data
+      stdErr += data
     },
     onExit: () => {},
   })
 
   const out = res.MEMFS[0]
   if (!out) {
-    _onProgress(1, true, true, null)
-    throw new Error("No output", stdout, stderr)
+    _onProgress(1, true, true, null, stdOut, stdErr)
+    throw new Error("No output", stdOut, stdErr)
   } else {
     const video = new Blob([out.data], { type: 'video/mp4' })
-    _onProgress(1, true, true, video)
+    _onProgress(1, true, true, video, stdOut, stdErr)
     return video
   }
 }

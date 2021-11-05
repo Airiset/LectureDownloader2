@@ -90,7 +90,7 @@ export default function App () {
     console.log("Sources changed", sources)
   }, [sources])
 
-  const rows = useMemo(() => Object.values(sources).map(({ downloadProgress, downloadDone, concatDone, port, m3u8URL }) => <Row className='progressRow'>
+  const rows = useMemo(() => Object.values(sources).map(({ downloadProgress, downloadDone, m3u8URL }) => <Row key={m3u8URL} className='progressRow'>
     <Col xs={2} className='progressId'>Title Unknown</Col>
     <Col className='progressBar'><ProgressBar now={downloadProgress*100} variant={downloadDone ? 'success' : 'info'} /></Col>
   </Row>), [sources])

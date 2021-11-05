@@ -138,7 +138,7 @@ function checkAndAddThumbnail(thumbnail) {
 }
 
 function checkAndAddLink(link) {
-  const r = /(https:\/\/play.library.utoronto.ca\/)(play\/)?([0-9a-z]+)/
+  const r = /(https:\/\/play.library.utoronto.ca\/)(watch\/|play\/)([0-9a-z]+)/
   const arr = link.href.match(r);
   if(arr) {
     const id = arr[3];

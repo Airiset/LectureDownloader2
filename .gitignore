@@ -7,4 +7,6 @@
 # misc
 .DS_Store
 
+size-plugin.json
+
 npm-debug.log*

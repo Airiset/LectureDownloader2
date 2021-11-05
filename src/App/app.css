@@ -1,0 +1,33 @@
+.mainContainer {
+  width: 700px;
+  padding: 0px;
+  margin: 0;
+}
+
+.mainContainer h1 {
+  margin: 5px;
+  margin-bottom: 10px;
+}
+
+.mainContainer p {
+  margin: 5px;
+  margin-bottom: 5px;
+}
+
+.progressRow {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  margin: 0 20px 10px 20px;
+}
+
+.progressRow .progressId {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.progressRow .progressBar {
+}

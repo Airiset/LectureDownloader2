@@ -11,6 +11,9 @@ const PATHS = require('./paths');
 // Whenever user creates an extension, CLI adds `webpack.common.js` file
 // in template's `config` folder
 const common = {
+  node: {
+    fs: 'empty'
+  },
   output: {
     // the build folder to output bundles and assets in.
     path: PATHS.build,
@@ -24,6 +27,17 @@ const common = {
   },
   module: {
     rules: [
+      {
+        test: /\.jsx$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            cacheCompression: false
+          }
+        }
+      },
       // Help webpack in understanding CSS files imported in .js files
       {
         test: /\.css$/,

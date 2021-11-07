@@ -81,13 +81,22 @@ chrome.runtime.onMessage.addListener((request, sender) => {
     // Opens a port to the popup and contentScripts for the given m3u8URL
     // Progress info comes directly from the downloadingVideos object with the m3u8URL as the key
     console.log("Opening port to the frontend for progress:", m3u8URL)
-    let port = chrome.extension.connect({ name: `PROGRESS:=+=:${m3u8URL}` })
+    let port
+    try {
+      port = chrome.extension.connect({ name: `PROGRESS:=+=:${m3u8URL}` })
+    } catch (err) {
+      console.log("Popup not open. Failed to open connection port.")
+    }
     downloadingVideos[m3u8URL].port = port
 
     // If a tab has been specified, we also want to send updates to that tab
     let tabPort = null
     if (tab) {
-      tabPort = chrome.tabs.connect(tab.id, { name: `PROGRESS:=+=:${m3u8URL}` })
+      try {
+        tabPort = chrome.tabs.connect(tab.id, { name: `PROGRESS:=+=:${m3u8URL}` })
+      } catch (err) {
+        console.log("Tab not open. Failed to open connection port.")
+      }
     }
     const update = () => {
       const message = {

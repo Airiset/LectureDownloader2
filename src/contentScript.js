@@ -12,7 +12,24 @@ function isNextDownloadButton(node) {
 
 async function download(id) {
   // We need to construct the m3u8 url from the lecture id
-  const m3u8URL = `https://stream.library.utoronto.ca:1935/MyMedia/play/mp4:1/${id}.mp4/chunklist.m3u8`
+  // We have two possible links depending on the file type: mp4 or m4a. We test both to see if they return a response and use the one that did
+  const m3u8Mp4URL = `https://stream.library.utoronto.ca:1935/MyMedia/play/mp4:1/${id}.mp4/chunklist.m3u8`
+  const m3u8M4aURL = `https://stream.library.utoronto.ca:1935/MyMedia/play/mp4:1/${id}.m4a/chunklist.m3u8`
+
+  let m3u8URL
+  const mp4Res = await fetch(m3u8Mp4URL)
+  if (mp4Res.ok) {
+    m3u8URL = m3u8Mp4URL
+  }
+  const m4aRes = await fetch(m3u8M4aURL)
+  if (m4aRes.ok) {
+    m3u8URL = m3u8M4aURL
+  }
+  if (!m3u8URL) {
+    console.log("Couldn't find m3u8 URL for lecture", id)
+    return;
+  }
+
   // Now we send a mesasge to the background script to download the file. The background script will also open a port back to us that gives us progress info
   chrome.runtime.sendMessage({ type: "START_DOWNLOAD", m3u8URL })
 }
@@ -30,7 +47,7 @@ chrome.runtime.onConnect.addListener(port => {
         let id
         for (const part of m3u8URL.split('/')) {
           // If this part has .mp4 in it, we know it is the lecture id
-          if (part.includes('.mp4')) {
+          if (part.includes('.mp4') || part.includes('.m4a')) {
             id = part.split('.')[0]
             break
           }

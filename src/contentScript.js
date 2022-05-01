@@ -53,7 +53,8 @@ chrome.runtime.onConnect.addListener(port => {
           }
         }
         // console.log(id, "has progress", downloadProgress, downloadDone, concatDone)
-        const button = buttons[id][0]
+        const buttonWrapper = buttons[id][0]
+        const button = buttonWrapper.children[0]
         if (button) {
           if (downloadDone) {
             button.innerHTML = "Downloaded"
@@ -72,25 +73,53 @@ chrome.runtime.onConnect.addListener(port => {
 
 const buttons = {} // Stores buttons as { [id]: { elem: [elements], downloading: bool } }
 
+function createUnstyledButton(id) {
+  // This creates a flexbox div where the left 2/3 is a download button and the right 1/3 is a link to the downloader site
+  const button = document.createElement('div')
+  button.id = 'downloadButton'
+  button.style.minHeight = "2rem";
+  button.style.background = 'rgb(207 232 255)';
+  button.style.borderRadius = "0.25rem";
+  button.style.color = "rgb(49, 130, 206)";
+  button.style.display = 'flex'
+  button.style.flexDirection = 'row'
+  button.style.alignItems = 'center'
+  button.style.justifyContent = 'space-between'
+  const downloadButton = document.createElement('buttton')
+  downloadButton.style.textAlign = 'center'
+  downloadButton.id = 'innerDownloadButton'
+  downloadButton.innerHTML = 'Download'
+  const linkButton = document.createElement('a')
+  linkButton.text = '(Click here to use the website if that didn\'t work)'
+  linkButton.href = `http://lectures.engscitools.ca?seed=${id}`
+  linkButton.target = "_blank"
+  linkButton.style.textAlign = 'center'
+  // Now we put these buttons into the button container
+  button.appendChild(downloadButton)
+  button.appendChild(linkButton)
+  // And we style them so that downloadButton takes 2/3 and linkButton takes 1/3
+  downloadButton.style.flex = '2'
+  linkButton.style.flex = '1'
+
+  downloadButton.onclick = () => {
+    download(id);
+  }
+
+  return button
+}
+
+
 function checkAndAddIframe(iframe) {
   const r = /(https:\/\/play.library.utoronto.ca\/embed\/)([0-9a-z]+)/
   const arr = iframe.src.match(r)
   if (arr) {
     // console.log("Got id from iframe", arr[2], iframe)
     const id = arr[2]; // This matches the lecture id as seen in the database
-    const button = document.createElement('button');
     const width = iframe.width;
-    button.innerHTML = "Download";
-    button.id = "downloadButton";
+
+    const button = createUnstyledButton(id)
     button.style.width = width+"px";
-    button.style.background = 'rgb(207 232 255)';
-    button.style.color = "rgb(49, 130, 206)";
-    button.style.borderRadius = "0.25rem";
-    button.style.height = "2rem";
     button.style.border = "none";
-    button.onclick = () => {
-      download(id);
-    }
     const parent = iframe.parentNode;
     // We edit the parent so the button lies under the iframe. I hope this doesn't have wider effects.
     parent.style.display = "flex";
@@ -108,15 +137,10 @@ function checkAndAddIframe(iframe) {
 
 function checkAndAddThumbnail(thumbnail) {
   function addButton(id) {
-    const button = document.createElement('button');
-    button.classList = 'css-41msu2'; // We use a class that is already on these pages to style
-    button.id = "downloadButton";
+    const button = createUnstyledButton(id)
+    console.log("Created button", thumbnail.parentNode, button)
     button.style.marginRight = '0';
     button.style.background = 'rgb(207 232 255)';
-    button.innerHTML = "Download"
-    button.onclick = () => {
-      download(id);
-    }
     // The parent of the thumbnail is the actual video so we insert after the parent.
     if (!isNextDownloadButton(thumbnail.parentNode)) {
       insertAfter(thumbnail.parentNode, button);
@@ -159,13 +183,8 @@ function checkAndAddLink(link) {
   const arr = link.href.match(r);
   if(arr) {
     const id = arr[3];
-    const button = document.createElement('button');
-    button.innerHTML = "Download";
-    button.id = "downloadButton";
-    button.style.background = 'rgb(207 232 255)';
-    button.style.color = "rgb(49, 130, 206)";
-    button.style.borderRadius = "0.25rem";
-    button.style.height = "2rem";
+
+    const button = createUnstyledButton(id)
     button.style.border = "none";
     // console.log("Got id from link", id, link)
     button.onclick = () => {

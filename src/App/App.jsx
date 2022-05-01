@@ -101,6 +101,7 @@ export default function App () {
       <p>
         Welcome to lecture downloader 2.0! Now with 100% less destroying my bank account! <i>Seriously though it was pretty bad...</i>
       </p>
+      <p>If this new version is not working, try using the old version on the website. Just paste the mymedia link in the textbox: <a href='http://lectures.engscitools.ca/' target="_blank">http://lectures.engscitools.ca/</a></p>
       <p>
         Anyway, that's all done now because now we are in the future and I can run c code in the browser. I was able to build a small
         version of FFmpeg that has the sole capability of converting m3u8 streams into mp4s. That means I can have your computer do all

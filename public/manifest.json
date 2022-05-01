@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Lecture Downloader",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
   "description": "Downloads UofT MyMedia Videos",
   "icons": {
